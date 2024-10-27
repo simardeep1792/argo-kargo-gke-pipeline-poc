@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: sample-app-canary
+  namespace: sample-app
+spec:
+  replicas: 4
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 60s }
+        - setWeight: 50
+        - pause: { duration: 60s }
+        - setWeight: 100
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: sample-app
+  template:
+    metadata:
+      labels:
+        app: sample-app
+    spec:
+      containers:
+      - name: demo-container
+        image: northamerica-northeast1-docker.pkg.dev/phx-01had7ny8p/argocd-artifact-registry/sample-app:latest
+        ports:
+        - containerPort: 8080

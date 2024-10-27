@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: argo-kargo-ci-sensor
+  namespace: argo-events
+spec:
+  dependencies:
+    - name: argo-kargo-github-dep
+      eventSourceName: argo-event-sources
+      eventName: argo-kargo-github
+
+  triggers:
+    - template:
+        name: argo-kargo-ci-workflow
+        argoWorkflow:
+          group: argoproj.io
+          version: v1alpha1
+          resource: Workflow
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: argo-kargo-ci-
+              spec:
+                entrypoint: main
+                templates:
+                  - name: main
+                    container:
+                      image: northamerica-northeast1-docker.pkg.dev/phx-01had7ny8p/argocd-artifact-registry/ci-image
+                      command: ["/bin/sh", "-c"]
+                      args: ["echo Running CI pipeline..."]
+      retryStrategy:
+        limit: 3

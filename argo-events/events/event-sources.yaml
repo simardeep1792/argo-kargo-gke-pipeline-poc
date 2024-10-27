@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: argo-event-sources
+  namespace: argo-events
+spec:
+  github:
+    argo-kargo-github:
+      webhook:
+        endpoint: /github
+        method: POST
+      events:
+        - push
+      owner: simardeep1792
+      repository: argo-kargo-gke-pipeline-poc
+      accessToken:
+        valueFrom:
+          secretKeyRef:
+            name: github-access-token
+            key: token
+
+  gcpPubSub:
+    artifact-registry-pubsub:
+      projectID: phx-01had7ny8p
+      topic: projects/phx-01had7ny8p/topics/artifact-registry-topic

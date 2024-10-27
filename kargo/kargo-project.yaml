@@ -1,0 +1,29 @@
+apiVersion: kargo.io/v1alpha1
+kind: Project
+metadata:
+  name: sample-app-project
+  namespace: sample-app
+spec:
+  description: "Kargo project for sample-app with multi-stage deployment"
+  stages:
+    - dev
+    - staging
+    - prod
+  rbac:
+    roles:
+      - name: dev-user
+        permissions:
+          - promote: dev
+      - name: staging-approver
+        permissions:
+          - verify: staging
+      - name: prod-approver
+        permissions:
+          - approve: prod
+    bindings:
+      - user: "dev-team"
+        role: dev-user
+      - user: "qa-team"
+        role: staging-approver
+      - user: "ops-team"
+        role: prod-approver

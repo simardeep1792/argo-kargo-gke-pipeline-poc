@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sample-app-virtual-service
+  namespace: sample-app
+spec:
+  gateways:
+  - istio-ingress/mesh-gateway
+  hosts:
+  - "harbor.alpha.phac.gc.ca"
+  http:
+  - name: gateway-to-sample-app
+    match:
+    - uri:
+        prefix: "/"
+      authority:
+        exact: "harbor.alpha.phac.gc.ca"
+    route:
+    - destination:
+        host: sample-app-service.sample-app.svc.cluster.local
+        port:
+          number: 80

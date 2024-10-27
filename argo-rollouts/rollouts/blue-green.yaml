@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: sample-app-bluegreen
+  namespace: sample-app
+spec:
+  replicas: 4
+  strategy:
+    blueGreen:
+      activeService: sample-app-service-active
+      previewService: sample-app-service-preview
+      autoPromotionEnabled: false
+      autoPromotionSeconds: 30
+      scaleDownDelaySeconds: 300
+  selector:
+    matchLabels:
+      app: sample-app
+  template:
+    metadata:
+      labels:
+        app: sample-app
+    spec:
+      containers:
+      - name: demo-container
+        image: northamerica-northeast1-docker.pkg.dev/phx-01had7ny8p/argocd-artifact-registry/sample-app:latest
+        ports:
+        - containerPort: 8080
